@@ -1,69 +1,97 @@
-# ECG Cardiac Abnormality Detection - Learning Journal
+# ECG Cardiac Abnormality Detection
 
----
+## Day 1 - Project Foundation, ECG Fundamentals & Dataset Planning
 
-# Day 1 - Project Initialization & Planning
+**Date:** 6 July 2026
 
-**Date:** July 6, 2026
-
-## Objectives
-- Initialize the GitHub repository.
-- Create a scalable project structure.
+### Objectives
 - Set up the development environment.
-- Plan the overall project architecture and roadmap.
+- Initialize Git and GitHub.
+- Design the project architecture.
+- Learn the fundamentals of ECG and cardiac electrical activity.
+- Explore ECG datasets.
+- Select the primary dataset for the project.
 
-## Tasks Completed
-- Created the GitHub repository: **ecg-cardiac-abnormality-detection**.
+### Work Completed
+- Created the GitHub repository **ecg-cardiac-abnormality-detection**.
 - Cloned the repository locally.
 - Opened the project in Visual Studio Code.
 - Created a Python virtual environment.
-- Designed a production-style folder structure separating:
-  - Machine Learning (`ml/`)
-  - FastAPI Backend (`backend/`)
-  - React Frontend (`frontend/`)
-  - Documentation (`docs/`)
-- Added the initial project files:
+- Designed a production-style project structure for:
+  - Machine Learning
+  - FastAPI Backend
+  - React Frontend
+  - Documentation
+- Added:
   - `README.md`
   - `.gitignore`
   - `requirements.txt`
   - `LICENSE`
-- Initialized Git and prepared the repository for development.
+- Planned the overall AI pipeline and project architecture.
+- Learned how the heart generates electrical impulses.
+- Studied the cardiac conduction system:
+  - SA Node
+  - AV Node
+  - Bundle of His
+  - Bundle Branches
+  - Purkinje Fibers
+- Understood how ECG machines record electrical activity.
+- Learned the ECG waveform:
+  - P Wave
+  - PR Interval
+  - QRS Complex
+  - T Wave
+- Learned the difference between electrodes and leads.
+- Understood that ECG is a time-series signal.
+- Learned about ECG sampling frequency and why the MIT-BIH dataset uses 360 Hz.
+- Explored PhysioNet ECG datasets.
+- Compared:
+  - MIT-BIH Arrhythmia Database
+  - MIT-BIH Supraventricular Arrhythmia Database (SVDB)
+  - PTB-XL
+  - Chapman-Shaoxing ECG Database
+- Selected the MIT-BIH Arrhythmia Database as the primary training dataset.
+- Learned the structure and purpose of:
+  - `.dat`
+  - `.hea`
+  - `.atr`
+- Understood how heartbeat annotations are used for supervised machine learning.
+- Planned the complete AI workflow from ECG upload to prediction and report generation.
 
-## What I Learned
-Today focused on laying a strong foundation before writing any code. I learned the importance of planning the project architecture early so that machine learning, backend, and frontend components remain modular and easy to maintain. Organizing the repository properly from the beginning will make future development cleaner and more scalable.
+### Concepts Learned
+- Cardiac electrophysiology
+- Cardiac conduction system
+- ECG signal acquisition
+- ECG waveform interpretation
+- Electrodes vs Leads
+- Time-series data
+- Sampling frequency
+- ECG preprocessing pipeline
+- Heartbeat annotations
+- Supervised learning
+- PhysioNet
+- MIT-BIH Arrhythmia Database
+- ECG dataset selection
+- AI inference pipeline
+- Production project architecture
 
-## Project Architecture
+### Files Added
+- `README.md`
+- `.gitignore`
+- `requirements.txt`
+- `LICENSE`
+- `docs/learning-journal.md`
 
-The project will consist of three major components:
+### Git Commit
+```
+Initialize project and plan ECG AI pipeline
+```
 
-1. **Machine Learning**
-   - ECG preprocessing
-   - Dataset management
-   - Model training
-   - Model evaluation
-   - Explainability
-
-2. **Backend**
-   - FastAPI inference service
-   - Model loading
-   - Prediction API
-   - PDF report generation
-
-3. **Frontend**
-   - ECG upload
-   - ECG visualization
-   - Prediction dashboard
-   - Confidence scores
-   - Explainability visualization
-
-## Reflection
-Although no machine learning code was written today, establishing a clean project structure is an important first step. Spending time on planning now will make it easier to develop, test, and deploy the application later. This also results in a more professional GitHub repository and a workflow similar to real-world software development.
-
-## Next Steps
-- Learn how ECG signals are acquired.
-- Understand ECG electrodes and leads.
-- Explore the PhysioNet datasets.
-- Decide which ECG dataset will be used for training.
-- Begin preparing the machine learning pipeline.
-
----
+### Next Session
+- Download the MIT-BIH Arrhythmia Database.
+- Learn the WFDB Python library.
+- Read `.dat`, `.hea` and `.atr` files.
+- Plot a real ECG signal.
+- Visualize heartbeat annotations.
+- Extract the first heartbeat.
+- Begin building the preprocessing pipeline.
