@@ -95,3 +95,76 @@ Initialize project and plan ECG AI pipeline
 - Visualize heartbeat annotations.
 - Extract the first heartbeat.
 - Begin building the preprocessing pipeline.
+
+
+## Day 2 - Reading ECG Data, Visualization & Heartbeat Extraction
+
+**Date:** 7 July 2026
+
+### Objectives
+
+* Download and organize the MIT-BIH Arrhythmia Database.
+* Learn the WFDB file format and Python library.
+* Read and visualize a real ECG recording.
+* Understand heartbeat annotations.
+* Learn the fundamentals of heartbeat extraction.
+
+### Work Completed
+
+* Downloaded and organized the MIT-BIH Arrhythmia Database.
+* Learned the purpose of `.dat`, `.hea`, and `.atr` files.
+* Installed and configured the WFDB Python library.
+* Loaded Record 100 using `wfdb.rdrecord()`.
+* Explored the `Record` object, including:
+
+  * Sampling frequency
+  * Signal length
+  * Lead names
+  * Signal units
+  * ECG waveform (`p_signal`)
+* Converted ECG sample numbers into time (seconds).
+* Plotted the first ECG waveform using Matplotlib.
+* Loaded annotations using `wfdb.rdann()`.
+* Explored `annotation.sample` and `annotation.symbol`.
+* Learned the difference between heartbeat and non-heartbeat annotations.
+* Understood common annotation symbols (`N`, `V`, `A`, `L`, `R`, `+`, `~`).
+* Learned NumPy Boolean masking and vectorized indexing.
+* Overlayed heartbeat annotations on the ECG waveform.
+* Understood why heartbeat annotations are aligned with the R peak.
+* Learned why machine learning models classify individual heartbeats instead of entire ECG recordings.
+* Extracted the first heartbeat window from a real ECG signal.
+* Designed a scalable heartbeat extraction pipeline for all ECG records.
+
+### Concepts Learned
+
+* WFDB library
+* ECG metadata
+* Record and Annotation objects
+* NumPy arrays
+* Boolean masking
+* ECG visualization
+* Sample-to-time conversion
+* Heartbeat annotations
+* R peak
+* Heartbeat extraction
+* Boundary checking
+* ECG preprocessing
+* Machine learning dataset creation
+
+### Files Added / Modified
+
+* `src/data/load_record.py`
+
+### Git Commit
+
+```
+Read ECG records and build heartbeat extraction pipeline
+```
+
+### Next Session
+
+* Refactor heartbeat extraction into reusable functions.
+* Process all 48 MIT-BIH records.
+* Build the complete heartbeat dataset (`X` and `y`).
+* Analyze class distribution.
+* Prepare the dataset for preprocessing and model training.
