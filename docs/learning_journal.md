@@ -168,3 +168,111 @@ Read ECG records and build heartbeat extraction pipeline
 * Build the complete heartbeat dataset (`X` and `y`).
 * Analyze class distribution.
 * Prepare the dataset for preprocessing and model training.
+
+
+## Day 3 - Dataset Architecture and Single Record Processing
+
+**Date:** 9 July 2026
+
+### Objectives
+
+* Design the machine learning dataset structure.
+* Refactor heartbeat extraction into reusable components.
+* Build a production-style dataset pipeline architecture.
+* Process an entire ECG record using the extraction pipeline.
+* Validate heartbeat extraction using real ECG data.
+
+### Work Completed
+
+* Defined the machine learning sample representation for the project.
+* Decided to perform heartbeat-level classification instead of record-level classification.
+* Designed the dataset structure:
+
+  * `X.shape = (num_heartbeats, 250)`
+  * `y.shape = (num_heartbeats,)`
+* Designed a reusable heartbeat extraction function:
+
+  * `extract_heartbeat()`
+* Implemented boundary validation for heartbeat extraction.
+* Decided to skip heartbeats whose extraction windows exceed signal boundaries.
+* Selected a heartbeat window of:
+
+  * 100 samples before the R peak
+  * 150 samples after the R peak
+  * 250 samples total
+* Learned NumPy slicing behavior and the difference between views and copies.
+* Implemented `.copy()` to ensure extracted heartbeats are independent from the original ECG signal.
+* Designed a reusable record processing function:
+
+  * `process_record()`
+* Implemented:
+
+  * heartbeat label filtering
+  * heartbeat extraction
+  * invalid beat handling
+  * dataset construction for a single record
+* Selected the initial heartbeat classes:
+
+  * `N`
+  * `V`
+  * `A`
+  * `L`
+  * `R`
+* Chose to use Python sets for efficient label membership checks.
+* Built a notebook for validating the extraction pipeline.
+* Processed MIT-BIH Record 100 using the complete pipeline.
+* Generated:
+
+  * `X_record`
+  * `y_record`
+* Verified dataset dimensions:
+
+  * `X_record.shape = (2271, 250)`
+  * `y_record.shape = (2271,)`
+* Analyzed class distribution for Record 100:
+
+  * `N = 2237`
+  * `A = 33`
+  * `V = 1`
+* Visualized extracted heartbeats from each class.
+* Verified that the R peak consistently appears at sample index `100`.
+* Validated that the heartbeat extraction pipeline behaves correctly on real ECG data.
+* Finalized the dataset module architecture.
+
+### Concepts Learned
+
+* Heartbeat-level classification
+* Dataset design for machine learning
+* Feature matrices and target vectors
+* NumPy views vs copies
+* Dataset construction pipelines
+* Record-level processing
+* Label filtering
+* Boundary validation
+* Class imbalance
+* Medical AI dataset design
+* Production ML architecture
+* Incremental validation and scaling strategies
+
+### Files Added / Modified
+
+* `ml/src/datasets/heartbeat_extractor.py`
+* `ml/src/datasets/record_processor.py`
+* `ml/notebooks/record_100_validation.ipynb`
+
+### Git Commit
+
+```
+Build heartbeat extraction and record processing pipeline
+```
+
+### Next Session
+
+* Create `constants.py` for centralized configuration.
+* Build `dataset_builder.py`.
+* Process all 48 MIT-BIH records.
+* Construct the complete heartbeat dataset (`X` and `y`).
+* Analyze global class distribution.
+* Investigate dataset imbalance.
+* Prepare the dataset for preprocessing and model training.
+
