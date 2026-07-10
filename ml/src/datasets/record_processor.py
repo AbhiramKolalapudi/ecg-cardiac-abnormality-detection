@@ -1,15 +1,13 @@
 import numpy as np
 from wfdb import Annotation
+from src.config.constants import TARGET_CLASSES
 
 from .heartbeat_extractor import extract_heartbeat
 
 
 def process_record(
     signal: np.ndarray,
-    annotation: Annotation,
-    valid_labels: set[str],
-    samples_before: int = 100,
-    samples_after: int = 150,
+    annotation: Annotation
 ) -> tuple[np.ndarray, np.ndarray]:
 
     heartbeats = []
@@ -17,14 +15,12 @@ def process_record(
 
     for r_peak, symbol in zip(annotation.sample, annotation.symbol):
 
-        if symbol not in valid_labels:
+        if symbol not in TARGET_CLASSES:
             continue
 
         heartbeat = extract_heartbeat(
             signal=signal,
-            r_peak=r_peak,
-            samples_before=samples_before,
-            samples_after=samples_after,
+            r_peak=r_peak
         )
 
         if heartbeat is None:

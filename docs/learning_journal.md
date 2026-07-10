@@ -276,3 +276,134 @@ Build heartbeat extraction and record processing pipeline
 * Investigate dataset imbalance.
 * Prepare the dataset for preprocessing and model training.
 
+## Day 4 - Configuration Management and Multi-Record Dataset Construction
+
+**Date:** 10 July 2026
+
+### Objectives
+
+* Centralize dataset configuration.
+* Build a scalable dataset construction pipeline.
+* Process multiple ECG records automatically.
+* Learn software engineering principles for ML systems.
+* Analyze initial multi-record class distribution.
+
+### Work Completed
+
+* Designed and implemented centralized project configuration using:
+
+  * `constants.py`
+* Moved hardcoded values into configuration:
+
+  * heartbeat extraction parameters
+  * target heartbeat classes
+  * dataset paths
+  * test record selection
+* Learned the concept of configuration separation:
+
+  * logic vs configuration
+  * reproducibility
+  * experiment management
+* Added:
+
+  * `SAMPLES_BEFORE_R`
+  * `SAMPLES_AFTER_R`
+  * `HEARTBEAT_LENGTH`
+  * `TARGET_CLASSES`
+  * `TEST_RECORDS`
+  * `MITDB_PATH`
+* Learned Python import resolution and module search paths.
+* Learned the difference between:
+
+  * current working directory
+  * `sys.path`
+  * package imports
+  * relative file paths
+* Standardized ML imports using:
+
+  * `from src...`
+* Learned why notebooks and scripts may behave differently with imports.
+* Replaced fragile relative dataset paths with `pathlib`.
+* Introduced:
+
+  * `PROJECT_ROOT`
+  * robust path construction
+* Designed and implemented:
+
+  * `dataset_builder.py`
+* Built a scalable multi-record dataset construction pipeline.
+* Processed multiple MIT-BIH records automatically.
+* Learned why NumPy arrays should not be concatenated repeatedly inside loops.
+* Used list accumulation followed by a single `np.concatenate()` operation.
+* Learned the computational complexity difference between:
+
+  * repeated concatenation (`O(n²)`)
+  * single concatenation (`O(n)`)
+* Processed the first development subset:
+
+  * Records `100`
+  * `101`
+  * `102`
+  * `103`
+  * `104`
+* Generated the first multi-record dataset:
+
+  * `X.shape = (6484, 250)`
+  * `y.shape = (6484,)`
+* Performed the first multi-record class distribution analysis:
+
+  * `N = 6439`
+  * `A = 38`
+  * `V = 7`
+* Observed that:
+
+  * class distributions vary significantly between patients
+  * some arrhythmia classes may be absent from subsets of the dataset
+* Learned the importance of:
+
+  * patient-level train/test splitting
+  * avoiding heartbeat-level data leakage
+  * class imbalance handling strategies
+
+### Concepts Learned
+
+* Configuration management
+* Reproducible ML experiments
+* Python import system
+* `sys.path`
+* Current working directory
+* Absolute vs relative imports
+* `pathlib`
+* Robust file path handling
+* Dataset orchestration
+* Multi-record dataset construction
+* Computational complexity
+* NumPy memory allocation behavior
+* Efficient concatenation strategies
+* Patient-level dataset splitting
+* Medical dataset leakage
+* Class imbalance in healthcare AI
+
+### Files Added / Modified
+
+* `ml/src/config/constants.py`
+* `ml/src/datasets/dataset_builder.py`
+* `ml/src/datasets/heartbeat_extractor.py`
+* `ml/src/datasets/record_processor.py`
+
+### Git Commit
+
+```text
+Build scalable ECG dataset construction pipeline
+```
+
+### Next Session
+
+* Add all MIT-BIH records to configuration.
+* Process the complete MIT-BIH dataset.
+* Analyze global class distribution.
+* Study patient-level distribution differences.
+* Design train/validation/test patient splits.
+* Prepare preprocessing and normalization pipeline.
+
+
