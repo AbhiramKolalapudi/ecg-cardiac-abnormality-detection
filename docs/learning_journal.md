@@ -407,3 +407,161 @@ Build scalable ECG dataset construction pipeline
 * Prepare preprocessing and normalization pipeline.
 
 
+## Day 5 - Full Dataset Construction, Patient Metadata and Leakage Analysis
+
+**Date:** 11 July 2026
+
+### Objectives
+
+* Scale the dataset pipeline from the development subset to the complete MIT-BIH dataset.
+* Introduce patient metadata tracking.
+* Study class imbalance and patient-level distributions.
+* Understand medical data leakage and patient-level splitting.
+* Investigate the impact of ignored annotation classes.
+
+### Work Completed
+
+* Extended dataset construction from the 5-record development subset to the complete MIT-BIH Arrhythmia Database.
+
+* Added the complete MIT-BIH record list to configuration.
+
+* Processed all 48 MIT-BIH recordings successfully.
+
+* Generated the first full-scale dataset:
+
+  * `X.shape = (100022, 250)`
+  * `y.shape = (100022,)`
+  * `patient_ids.shape = (100022,)`
+
+* Introduced patient metadata tracking:
+
+  * `patient_ids[i]` stores the originating patient/record for each heartbeat.
+  * Preserved alignment between:
+
+    * `X[i]`
+    * `y[i]`
+    * `patient_ids[i]`
+
+* Verified successful processing of all MIT-BIH records:
+
+  * `100`
+  * `101`
+  * `102`
+  * ...
+  * `234`
+
+* Learned the concept of heartbeat provenance and metadata preservation in machine learning pipelines.
+
+* Discussed architectural ownership of metadata and decided that:
+
+  * `dataset_builder.py` owns patient metadata generation.
+  * `record_processor.py` remains responsible only for signal processing.
+
+* Decided to:
+
+  * store patient IDs as integers.
+  * preserve labels as symbolic annotations (`N`, `A`, `V`, `L`, `R`) until model training.
+
+* Decided to persist patient metadata alongside datasets for reproducibility and future experiments.
+
+* Added:
+
+  * `MITBIH_RECORDS`
+  * `TEST_RECORDS`
+
+* Discussed explicit configuration versus automatic dataset discovery.
+
+* Adopted a fail-fast philosophy for dataset construction:
+
+  * missing or corrupted records should stop the build immediately.
+
+### Dataset Statistics
+
+#### Global Dataset Size
+
+* Total heartbeats: `100022`
+* Total records: `48`
+
+#### Class Distribution
+
+| Class | Count |
+| ----- | ----: |
+| N     | 75020 |
+| L     |  8072 |
+| R     |  7255 |
+| V     |  7129 |
+| A     |  2546 |
+
+### Patient-Level Analysis
+
+* Built patient-level class distribution tables using Pandas.
+* Observed strong patient-specific concentration of arrhythmias.
+
+Examples:
+
+* Patient `232` contributes `1382` atrial beats (`A`).
+
+* Patient `109` contributes `2491` left bundle branch block beats (`L`).
+
+* Patient `118` contributes `2165` right bundle branch block beats (`R`).
+
+* Patient `208` contributes `992` ventricular beats (`V`).
+
+* Learned that many patients contain only a subset of classes.
+
+* Learned that patient-level splitting is significantly more difficult than random heartbeat splitting.
+
+### Concepts Learned
+
+* Patient metadata tracking
+* Heartbeat provenance
+* Medical dataset leakage
+* Identity leakage
+* Patient-level train/test splitting
+* Group-aware validation
+* Group stratification
+* Explicit configuration
+* Fail-fast pipeline design
+* Class imbalance in medical AI
+* Exploratory data analysis with Pandas
+* Long vs wide tabular representations
+
+### Annotation Analysis
+
+* Investigated record `102` to understand why only `103` beats were retained.
+
+* Discovered the original annotation distribution:
+
+  * `/` = 2028 (paced beats)
+  * `N` = 99
+  * `f` = 56 (fusion paced beats)
+  * `+` = 5 (rhythm changes)
+  * `V` = 4
+
+* Learned that:
+
+  * paced beats belong to a different clinical problem.
+  * rhythm markers are not heartbeats.
+  * target class selection directly determines dataset composition.
+
+### Files Added / Modified
+
+* `ml/src/config/constants.py`
+* `ml/src/datasets/dataset_builder.py`
+
+### Git Commit
+
+```text
+Scale ECG dataset pipeline to full MIT-BIH dataset and add patient metadata tracking
+```
+
+### Next Session
+
+* Design patient-level train/validation/test splits.
+* Learn group-aware splitting strategies.
+* Study normalization and scaling of ECG signals.
+* Understand normalization leakage.
+* Decide where preprocessing belongs in the project architecture.
+* Begin building the preprocessing pipeline.
+
+
