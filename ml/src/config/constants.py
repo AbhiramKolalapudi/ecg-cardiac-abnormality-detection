@@ -41,3 +41,17 @@ MITBIH_RECORDS = [
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 MITDB_PATH = PROJECT_ROOT / "data" / "raw" / "mitdb"
+
+
+# Dataset Split Configuration
+TRAIN_RATIO = 0.70
+VALIDATION_RATIO = 0.15
+TEST_RATIO = 0.15
+
+RANDOM_STATE = 42
+
+
+# Processed Data Paths
+PROCESSED_DATA_PATH = PROJECT_ROOT / "data" / "processed"
+
+SPLITS_PATH = PROCESSED_DATA_PATH / "splits"

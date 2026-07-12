@@ -564,4 +564,133 @@ Scale ECG dataset pipeline to full MIT-BIH dataset and add patient metadata trac
 * Decide where preprocessing belongs in the project architecture.
 * Begin building the preprocessing pipeline.
 
+## Day 6 - Patient Splitting and Preprocessing Architecture
+
+**Date:** 12 July 2026
+
+### Objectives
+
+* Design patient-aware train/validation/test splitting.
+* Study group-aware splitting methods for medical datasets.
+* Prevent patient leakage.
+* Design preprocessing architecture for model training.
+* Begin implementing the preprocessing pipeline.
+
+### Work Completed
+
+* Studied why heartbeat-level train/test splitting causes medical data leakage.
+
+* Learned the difference between:
+
+  * heartbeat-level splitting
+  * patient-level splitting
+
+* Understood that models can memorize patient-specific ECG morphology rather than learning actual diseases.
+
+* Learned the concept of identity leakage in medical machine learning.
+
+* Studied group-aware splitting methods.
+
+* Installed and configured:
+
+  * `scikit-learn`
+
+* Explored:
+
+  * `StratifiedGroupKFold`
+
+* Learned how group-aware splitting attempts to preserve:
+
+  * patient independence
+  * class distributions
+
+* Designed a patient split persistence strategy.
+
+* Decided to save:
+
+  * `train_patients.npy`
+  * `val_patients.npy`
+  * `test_patients.npy`
+
+instead of heartbeat indices.
+
+* Added split configuration to `constants.py`:
+
+  * `TRAIN_RATIO`
+  * `VALIDATION_RATIO`
+  * `TEST_RATIO`
+  * `RANDOM_STATE`
+  * `PROCESSED_DATA_PATH`
+  * `SPLITS_PATH`
+
+* Designed and implemented:
+
+  * `splitter.py`
+
+* Implemented:
+
+  * `save_patient_splits()`
+  * `load_patient_splits()`
+  * `generate_patient_splits()`
+  * `get_patient_splits()`
+
+* Learned how to reconstruct heartbeat datasets using:
+
+  * `np.isin()`
+
+* Built patient masks for:
+
+  * training
+  * validation
+  * testing
+
+* Performed split validation and class distribution analysis.
+
+* Observed limitations of patient-level stratification in small medical datasets.
+
+* Discovered that preserving patient independence is often more important than achieving perfect class balance.
+
+* Finalized the patient splitting strategy for the project.
+
+### Concepts Learned
+
+* Medical data leakage
+* Identity leakage
+* Patient-level splitting
+* Group-aware validation
+* StratifiedGroupKFold
+* Metadata persistence
+* Split reproducibility
+* Boolean masking
+* `np.isin()`
+* Dataset reconstruction
+* Preprocessing architecture
+* Production ML pipeline design
+
+### Files Added / Modified
+
+* `ml/src/preprocessing/splitter.py`
+* `ml/src/config/constants.py`
+
+### Git Commit
+
+```text
+Implement patient-aware dataset splitting and split persistence
+```
+
+### Next Session
+
+* Implement ECG normalization.
+
+* Study normalization leakage.
+
+* Build:
+
+  * `normalize_heartbeat()`
+  * `normalize_dataset()`
+
+* Design the preprocessing pipeline.
+
+* Prepare datasets for model training.
+
 
