@@ -694,3 +694,235 @@ Implement patient-aware dataset splitting and split persistence
 * Prepare datasets for model training.
 
 
+## Day 7 - Manual Patient Splitting and Preprocessing Pipeline
+
+**Date:** 13 July 2026
+
+### Objectives
+
+* Improve patient-level train/validation/test splits.
+* Eliminate limitations of automatic stratified group splitting.
+* Implement ECG normalization.
+* Build label encoding.
+* Design and implement the preprocessing pipeline.
+* Prepare the dataset for model training.
+
+### Work Completed
+
+* Evaluated the limitations of `StratifiedGroupKFold` for small medical datasets.
+
+* Observed that automatic splitting produced missing classes in validation and test sets.
+
+* Studied the tradeoff between:
+
+  * perfect class balance
+  * patient independence
+  * reproducibility
+
+* Designed a manually curated patient split protocol.
+
+### Final Patient Split
+
+#### Training Patients
+
+* 31 patients
+
+#### Validation Patients
+
+* 8 patients
+
+#### Test Patients
+
+* 9 patients
+
+### Final Split Statistics
+
+#### Training
+
+| Class | Count |
+| ----- | ----: |
+| N     | 57922 |
+| V     |  5251 |
+| L     |  4492 |
+| R     |  4387 |
+| A     |  1992 |
+
+#### Validation
+
+| Class | Count |
+| ----- | ----: |
+| N     | 10792 |
+| V     |  1603 |
+| L     |  1457 |
+| R     |  1338 |
+| A     |   250 |
+
+#### Test
+
+| Class | Count |
+| ----- | ----: |
+| N     |  6306 |
+| L     |  2123 |
+| R     |  1530 |
+| A     |   304 |
+| V     |   275 |
+
+* Verified:
+
+  * no patient leakage
+  * all classes present in every split
+  * approximately 74/15/11 split ratio
+  * reproducible experimental protocol
+
+* Refactored `splitter.py` to use deterministic patient splits instead of automatic generation.
+
+* Preserved split persistence using:
+
+  * `train_patients.npy`
+  * `val_patients.npy`
+  * `test_patients.npy`
+
+### ECG Normalization
+
+* Studied the purpose of ECG normalization.
+
+* Learned the difference between:
+
+  * Min-Max normalization
+  * Global standardization
+  * Per-heartbeat Z-score normalization
+
+* Selected per-heartbeat Z-score normalization.
+
+* Learned that normalization removes:
+
+  * baseline offsets
+  * gain differences
+  * electrode placement effects
+  * machine calibration differences
+
+* Learned that normalization preserves:
+
+  * QRS morphology
+  * P wave morphology
+  * T wave morphology
+  * temporal relationships
+  * relative amplitudes
+
+* Implemented:
+
+  * `normalize_heartbeat()`
+  * `normalize_dataset()`
+
+* Added numerical stability using:
+
+  * `EPSILON = 1e-8`
+
+* Used vectorized NumPy operations for dataset normalization.
+
+### Normalization Validation
+
+* Verified:
+
+  * mean ≈ 0
+  * standard deviation ≈ 1
+  * morphology preservation
+  * correct dataset-wide behavior
+
+* Validated normalization on all 100,022 heartbeats.
+
+### Label Encoding
+
+* Studied explicit label mappings versus automatic encoders.
+* Selected explicit deterministic mappings.
+
+Implemented:
+
+* `LABEL_TO_INDEX`
+* `INDEX_TO_LABEL`
+
+Mappings:
+
+* N → 0
+* A → 1
+* V → 2
+* L → 3
+* R → 4
+
+Implemented:
+
+* `encode_labels()`
+* `decode_labels()`
+
+Validated:
+
+* `decode(encode(y)) == y`
+
+### Preprocessing Pipeline
+
+* Designed and implemented:
+
+  * `pipeline.py`
+
+Implemented:
+
+* patient-level splitting
+* normalization
+* label encoding
+
+Pipeline flow:
+
+MIT-BIH Records
+→ Heartbeat Extraction
+→ Dataset Construction
+→ Patient Splitting
+→ Normalization
+→ Label Encoding
+→ Model-Ready Dataset
+
+### Concepts Learned
+
+* Deterministic experimental protocols
+* Manual split design for medical datasets
+* ECG normalization
+* Z-score normalization
+* Numerical stability
+* Broadcasting in NumPy
+* Vectorized preprocessing
+* Label encoding
+* Reversible mappings
+* Preprocessing pipelines
+* Separation of concerns
+* Dataset immutability
+* Reproducible ML experiments
+
+### Files Added / Modified
+
+* `ml/src/preprocessing/splitter.py`
+* `ml/src/preprocessing/normalizer.py`
+* `ml/src/preprocessing/encoder.py`
+* `ml/src/preprocessing/pipeline.py`
+* `ml/src/config/constants.py`
+
+### Git Commit
+
+```
+Build ECG preprocessing pipeline and finalize patient split protocol
+```
+
+### Project Status
+
+✅ Dataset Engineering Phase Complete
+
+✅ Preprocessing Phase Complete
+
+### Next Session
+
+* Study why CNNs work for ECG signals.
+* Compare MLPs, RNNs and CNNs.
+* Design the baseline 1D CNN architecture.
+* Build the training pipeline.
+* Train the first baseline model.
+* Establish baseline performance metrics.
+
+

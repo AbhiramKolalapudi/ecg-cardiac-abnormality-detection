@@ -1,40 +1,40 @@
 import numpy as np
 
-from sklearn.model_selection import StratifiedGroupKFold
-
 from src.config.constants import (
-    SPLITS_PATH,
-    RANDOM_STATE,
+    TRAIN_PATIENTS,
+    VALIDATION_PATIENTS,
+    TEST_PATIENTS,
+    SPLITS_PATH
 )
+
 
 def save_patient_splits(
     train_patients: np.ndarray,
     val_patients: np.ndarray,
-    test_patients: np.ndarray,
+    test_patients: np.ndarray
 ) -> None:
 
-    SPLITS_PATH.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
+
+    SPLITS_PATH.mkdir(parents=True, exist_ok=True)
 
     np.save(
         SPLITS_PATH / "train_patients.npy",
-        train_patients,
+        train_patients
     )
 
     np.save(
         SPLITS_PATH / "val_patients.npy",
-        val_patients,
+        val_patients
     )
 
     np.save(
         SPLITS_PATH / "test_patients.npy",
-        test_patients,
+        test_patients
     )
 
-def load_patient_splits(
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+
+def load_patient_splits():
+
 
     train_patients = np.load(
         SPLITS_PATH / "train_patients.npy"
@@ -51,81 +51,60 @@ def load_patient_splits(
     return (
         train_patients,
         val_patients,
-        test_patients,
+        test_patients
     )
 
-def generate_patient_splits(
-    y: np.ndarray,
-    patient_ids: np.ndarray,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
 
-    splitter = StratifiedGroupKFold(
-        n_splits=7,
-        shuffle=True,
-        random_state=RANDOM_STATE,
-    )
+def validate_patient_splits(
+    train_patients: np.ndarray,
+    val_patients: np.ndarray,
+    test_patients: np.ndarray
+) -> None:
 
-    folds = list(
-        splitter.split(
-            X=np.zeros(len(y)),
-            y=y,
-            groups=patient_ids,
+    train_set = set(train_patients)
+    val_set = set(val_patients)
+    test_set = set(test_patients)
+
+    if train_set & val_set:
+        raise ValueError(
+            "Patient overlap detected between training and validation sets."
         )
-    )
 
-    test_indices = folds[0][1]
-    val_indices = folds[1][1]
-
-    train_indices = np.concatenate(
-        [fold[1] for fold in folds[2:]]
-    )
-
-    test_patients = np.unique(
-        patient_ids[test_indices]
-    )
-
-    val_patients = np.unique(
-        patient_ids[val_indices]
-    )
-
-    train_patients = np.unique(
-        patient_ids[train_indices]
-    )
-
-    return (
-        train_patients,
-        val_patients,
-        test_patients,
-    )
-
-def get_patient_splits(
-    y: np.ndarray,
-    patient_ids: np.ndarray,
-    regenerate: bool = False,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-
-    if not regenerate:
-        try:
-            return load_patient_splits()
-
-        except FileNotFoundError:
-            pass
-
-    train_patients, val_patients, test_patients = (
-        generate_patient_splits(
-            y,
-            patient_ids,
+    if train_set & test_set:
+        raise ValueError(
+            "Patient overlap detected between training and test sets."
         )
-    )
 
-    save_patient_splits(
+    if val_set & test_set:
+        raise ValueError(
+            "Patient overlap detected between validation and test sets."
+        )
+
+
+def get_patient_splits():
+
+
+    train_patients = np.array(TRAIN_PATIENTS)
+    val_patients = np.array(VALIDATION_PATIENTS)
+    test_patients = np.array(TEST_PATIENTS)
+
+    validate_patient_splits(
         train_patients,
         val_patients,
-        test_patients,
+        test_patients
     )
 
-    return (
-        train_patients,
-        val_patients,
-        test_patients,
+    split_files_exist = (
+        (SPLITS_PATH / "train_patients.npy").exists()
+        and (SPLITS_PATH / "val_patients.npy").exists()
+        and (SPLITS_PATH / "test_patients.npy").exists()
     )
+
+    if not split_files_exist:
+        save_patient_splits(
+            train_patients,
+            val_patients,
+            test_patients
+        )
+
+    return load_patient_splits()

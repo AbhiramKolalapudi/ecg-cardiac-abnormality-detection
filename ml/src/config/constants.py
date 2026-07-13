@@ -44,14 +44,41 @@ MITDB_PATH = PROJECT_ROOT / "data" / "raw" / "mitdb"
 
 
 # Dataset Split Configuration
-TRAIN_RATIO = 0.70
-VALIDATION_RATIO = 0.15
-TEST_RATIO = 0.15
+TRAIN_PATIENTS = [
+    100, 101, 103, 105, 106, 108, 109, 112, 114, 115,
+    116, 118, 121, 122, 123, 200, 203, 205, 208, 209,
+    210, 212, 213, 214, 215, 219, 221, 230, 232, 233,
+    234
+]
 
-RANDOM_STATE = 42
+VALIDATION_PATIENTS = [
+    117, 119, 201, 202, 207, 223, 228, 231
+]
+
+TEST_PATIENTS = [
+    102, 104, 107, 111, 113, 124, 217, 220, 222
+]
 
 
 # Processed Data Paths
 PROCESSED_DATA_PATH = PROJECT_ROOT / "data" / "processed"
 
 SPLITS_PATH = PROCESSED_DATA_PATH / "splits"
+
+
+#Label Mapping
+LABEL_TO_INDEX = {
+    "N": 0,
+    "A": 1,
+    "V": 2,
+    "L": 3,
+    "R": 4,
+}
+
+INDEX_TO_LABEL = {
+    0: "N",
+    1: "A",
+    2: "V",
+    3: "L",
+    4: "R",
+}
