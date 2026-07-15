@@ -925,4 +925,455 @@ Build ECG preprocessing pipeline and finalize patient split protocol
 * Train the first baseline model.
 * Establish baseline performance metrics.
 
+## Day 8 - CNN Fundamentals and ECG Model Architecture Design
 
+**Date:** 14 July 2026
+
+### Objectives
+
+* Understand why CNNs are effective for ECG classification.
+* Compare MLPs, RNNs and CNNs for heartbeat classification.
+* Select an appropriate deep learning architecture for the project.
+* Design the baseline ECG classifier.
+* Learn the fundamentals of PyTorch training pipelines.
+* Prepare the project for model implementation.
+
+### Work Completed
+
+* Studied ECG heartbeat classification as a morphology recognition problem.
+
+* Learned why traditional fully connected networks perform poorly on ECG data:
+
+  * ignore temporal locality
+  * fail to exploit waveform structure
+  * are sensitive to small signal shifts
+
+* Compared:
+
+  * MLPs
+  * RNNs/LSTMs
+  * CNNs
+
+for ECG heartbeat classification.
+
+* Learned that heartbeat classification depends primarily on local morphology rather than long-range temporal dependencies.
+
+* Selected a CNN architecture as the primary modeling approach.
+
+* Studied convolution filters and local feature extraction.
+
+* Learned the concepts of:
+
+  * kernels
+  * channels
+  * feature maps
+  * weight sharing
+  * translation invariance
+
+* Learned how convolution filters slide across ECG signals to detect waveform patterns.
+
+* Compared:
+
+  * small kernels
+  * large kernels
+
+and selected:
+
+* `kernel_size = 5`
+
+for the baseline architecture.
+
+* Studied the purpose of max pooling.
+
+* Learned that pooling:
+
+  * reduces dimensionality
+  * reduces computation
+  * improves robustness to small temporal shifts
+
+* Selected a 1D CNN architecture instead of a 2D CNN architecture.
+
+* Designed the baseline ECG classifier:
+
+```text
+Input
+→ Conv1D
+→ ReLU
+→ MaxPool
+→ Conv1D
+→ ReLU
+→ MaxPool
+→ Flatten
+→ Dense Layers
+→ Output Layer
+```
+
+* Learned the role of flattening and fully connected layers in CNN classifiers.
+
+* Studied multi-class classification loss functions.
+
+* Selected:
+
+  * `CrossEntropyLoss`
+
+for heartbeat classification.
+
+* Analyzed class imbalance in the training set.
+
+* Calculated that an always-normal classifier would achieve approximately:
+
+  * `78.2%`
+
+training accuracy despite being clinically useless.
+
+* Learned why accuracy is insufficient for evaluating medical AI systems.
+
+* Selected primary evaluation metrics:
+
+  * Precision
+  * Recall
+  * F1 Score
+  * Confusion Matrix
+
+* Studied weighted loss functions for imbalanced datasets.
+
+* Selected balanced class weighting for the baseline model.
+
+* Designed the PyTorch training architecture.
+
+* Defined ownership boundaries for:
+
+  * `models/`
+  * `training/`
+
+* Learned the distinction between:
+
+  * `Dataset`
+  * `DataLoader`
+
+* Designed the tensor flow for the complete training pipeline.
+
+### Concepts Learned
+
+* CNNs
+* Convolution filters
+* Kernel size
+* Feature maps
+* Channels
+* Weight sharing
+* Translation invariance
+* Pooling
+* Hierarchical feature learning
+* Flattening
+* Dense layers
+* Cross entropy loss
+* Class imbalance
+* Precision
+* Recall
+* F1 score
+* Confusion matrix
+* PyTorch Dataset
+* DataLoader
+* Mini-batch training
+* Tensor dimensions
+
+### Files Added / Modified
+
+* None
+
+### Git Commit
+
+```
+No code changes - model architecture and training pipeline design
+```
+
+### Next Session
+
+* Implement `baseline_cnn.py`.
+* Build `ECGDataset`.
+* Create DataLoaders.
+* Implement weighted loss functions.
+* Build the training loop.
+* Train the first CNN model.
+* Establish baseline metrics.
+* Begin model evaluation.
+
+## Day 9 - PyTorch Pipeline, CNN Implementation and First Model Training
+
+**Date:** 15 July 2026
+
+### Objectives
+
+* Implement the baseline CNN architecture in PyTorch.
+* Build the PyTorch dataset pipeline.
+* Learn mini-batch training fundamentals.
+* Implement weighted loss functions for class imbalance.
+* Build the training infrastructure.
+* Train the first ECG CNN model.
+
+### Work Completed
+
+* Designed and implemented:
+
+  * `ECGDataset`
+
+* Learned the responsibilities of:
+
+  * `__init__()`
+  * `__len__()`
+  * `__getitem__()`
+
+* Learned the distinction between:
+
+  * `Dataset`
+  * `DataLoader`
+
+* Understood that:
+
+  * `Dataset` returns a single sample.
+  * `DataLoader` creates mini-batches.
+
+* Built PyTorch datasets for:
+
+  * training
+  * validation
+  * testing
+
+* Built DataLoaders for:
+
+  * training
+  * validation
+  * testing
+
+* Selected:
+
+  * `batch_size = 64`
+
+* Verified DataLoader output dimensions:
+
+  * `signals.shape = (64, 1, 250)`
+  * `labels.shape = (64,)`
+
+### Baseline CNN Implementation
+
+* Implemented:
+
+  * `baseline_cnn.py`
+
+* Built the baseline architecture:
+
+```text
+Input (1,250)
+→ Conv1D(1→32, kernel_size=5)
+→ ReLU
+→ MaxPool1D
+→ Conv1D(32→64, kernel_size=5)
+→ ReLU
+→ MaxPool1D
+→ Flatten
+→ Linear(3776→128)
+→ Linear(128→5)
+```
+
+* Verified tensor dimensions throughout the network:
+
+```text
+(64,1,250)
+→ (64,32,246)
+→ (64,32,123)
+→ (64,64,119)
+→ (64,64,59)
+→ (64,3776)
+→ (64,128)
+→ (64,5)
+```
+
+* Verified successful forward propagation using real training batches.
+
+### Class Imbalance Handling
+
+* Studied weighted loss functions for imbalanced medical datasets.
+
+* Implemented:
+
+  * `compute_class_weight()`
+
+* Generated balanced class weights:
+
+| Class | Weight |
+| ----- | -----: |
+| N     | 0.2557 |
+| A     | 7.4341 |
+| V     | 2.8202 |
+| L     | 3.2967 |
+| R     | 3.3756 |
+
+* Implemented weighted:
+
+  * `CrossEntropyLoss`
+
+* Learned that minority classes contribute more strongly to training loss.
+
+### Optimizer and Backpropagation
+
+* Selected:
+
+  * `Adam`
+
+as the baseline optimizer.
+
+* Learned the complete training cycle:
+
+```text
+Forward Pass
+→ Loss Calculation
+→ Gradient Computation
+→ Weight Update
+```
+
+* Studied:
+
+  * gradients
+  * backpropagation
+  * optimizer updates
+
+* Learned the role of:
+
+  * `loss.backward()`
+  * `optimizer.step()`
+  * `optimizer.zero_grad()`
+
+* Understood that:
+
+  * forward pass uses model weights
+  * backward pass computes gradients
+  * optimizer updates weights using gradients
+
+### Training Infrastructure
+
+* Designed and implemented:
+
+  * `trainer.py`
+
+* Implemented:
+
+  * `train_one_epoch()`
+
+* Designed and implemented:
+
+  * `train.py`
+
+* Implemented:
+
+  * device selection
+  * dataset construction
+  * preprocessing pipeline integration
+  * model initialization
+  * class weight generation
+  * loss function creation
+  * optimizer creation
+  * epoch loop
+
+* Learned the purpose of:
+
+  * `model.train()`
+
+### First Training Run
+
+* Successfully trained the first ECG CNN model end-to-end.
+
+* Verified successful learning behavior.
+
+Training loss progression:
+
+| Epoch |   Loss |
+| ----: | -----: |
+|     1 | 0.1646 |
+|     2 | 0.0731 |
+|     3 | 0.0556 |
+|     4 | 0.0407 |
+|     5 | 0.0334 |
+|   ... |    ... |
+|    20 | 0.0069 |
+
+* Confirmed that:
+
+  * forward propagation works
+  * backpropagation works
+  * gradients are computed correctly
+  * optimizer updates are functioning correctly
+  * the CNN successfully learns ECG morphology
+
+### Concepts Learned
+
+* PyTorch Dataset
+* DataLoader
+* Mini-batch training
+* Conv1D
+* Flattening
+* Fully connected layers
+* CrossEntropyLoss
+* Class weighting
+* Adam optimizer
+* Forward propagation
+* Backpropagation
+* Gradients
+* Weight updates
+* Epochs
+* Batches
+* Training loops
+* GPU vs CPU execution
+* Model parameter optimization
+
+### Files Added / Modified
+
+* `ml/src/training/ecg_dataset.py`
+* `ml/src/models/baseline_cnn.py`
+* `ml/src/training/trainer.py`
+* `ml/src/training/train.py`
+* `ml/src/config/constants.py`
+
+### Git Commit
+
+```text
+Implement baseline ECG CNN and complete first end-to-end training pipeline
+```
+
+### Project Status
+
+✅ Dataset Engineering Complete
+
+✅ Preprocessing Pipeline Complete
+
+✅ Baseline CNN Implemented
+
+✅ PyTorch Training Pipeline Complete
+
+✅ First Successful Model Training Complete
+
+### Next Session
+
+* Implement validation infrastructure.
+
+* Learn:
+
+  * `model.eval()`
+  * `torch.no_grad()`
+
+* Build:
+
+  * `validate_one_epoch()`
+
+* Compute:
+
+  * validation loss
+  * accuracy
+  * precision
+  * recall
+  * F1 score
+
+* Generate confusion matrices.
+
+* Detect overfitting and evaluate generalization performance.
+
+* Implement model checkpoint saving based on validation performance.

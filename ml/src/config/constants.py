@@ -82,3 +82,23 @@ INDEX_TO_LABEL = {
     3: "L",
     4: "R",
 }
+
+# Training Configuration
+BATCH_SIZE = 64
+LEARNING_RATE = 1e-3
+NUM_EPOCHS = 20
+
+# Dataset Information
+NUM_CLASSES = 5
+
+# Ordered Class Names
+CLASS_NAMES = [
+    "N",
+    "A",
+    "V",
+    "L",
+    "R",
+]
+
+# Preferred Training Device
+DEVICE = "cuda"
