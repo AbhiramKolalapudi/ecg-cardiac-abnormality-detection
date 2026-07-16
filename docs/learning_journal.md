@@ -1377,3 +1377,229 @@ Implement baseline ECG CNN and complete first end-to-end training pipeline
 * Detect overfitting and evaluate generalization performance.
 
 * Implement model checkpoint saving based on validation performance.
+
+## Day 10 - Validation Pipeline, Model Evaluation and Failure Analysis
+
+**Date:** 16 July 2026
+
+### Objectives
+
+* Understand validation and generalization in machine learning.
+* Learn how to evaluate medical AI systems.
+* Implement the validation pipeline.
+* Compute classification metrics.
+* Evaluate the baseline CNN on unseen patients.
+* Analyze model strengths and weaknesses.
+
+### Work Completed
+
+* Learned the difference between:
+
+  * training datasets
+  * validation datasets
+  * test datasets
+
+* Studied:
+
+  * generalization
+  * overfitting
+
+* Learned why patient-independent validation is essential in medical AI systems.
+
+* Learned the purpose of:
+
+  * `model.eval()`
+  * `torch.no_grad()`
+
+* Studied how evaluation differs from training:
+
+```text
+Training
+→ Forward Pass
+→ Loss Calculation
+→ Backpropagation
+→ Optimizer Update
+
+Validation
+→ Forward Pass
+→ Loss Calculation
+→ Predictions
+→ Metrics
+```
+
+* Designed and implemented:
+
+  * `validator.py`
+
+* Implemented:
+
+  * `validate_one_epoch()`
+
+* Implemented:
+
+  * validation loss computation
+  * prediction collection across the entire validation set
+  * metric computation on complete validation predictions
+
+* Designed and implemented:
+
+  * `metrics.py`
+
+* Implemented:
+
+  * `accuracy_score()`
+  * `precision_score()`
+  * `recall_score()`
+  * `f1_score()`
+  * `confusion_matrix()`
+
+* Learned the difference between:
+
+  * accuracy
+  * precision
+  * recall
+  * F1 score
+
+* Studied why accuracy alone is insufficient for imbalanced medical datasets.
+
+* Learned the difference between:
+
+  * weighted training losses
+  * evaluation metrics
+
+* Selected:
+
+  * Macro Precision
+  * Macro Recall
+  * Macro F1
+
+as the primary evaluation metrics for the project.
+
+* Learned the difference between:
+
+  * micro averaging
+  * weighted averaging
+  * macro averaging
+
+* Implemented:
+
+  * per-class precision
+  * per-class recall
+  * per-class F1
+
+* Generated the first confusion matrix for unseen patients.
+
+* Integrated validation into:
+
+  * `train.py`
+
+* Successfully performed the first patient-independent model evaluation.
+
+### Validation Results
+
+Best validation performance:
+
+| Metric    |  Value |
+| --------- | -----: |
+| Accuracy  | 0.8341 |
+| Precision | 0.5179 |
+| Recall    | 0.5679 |
+| Macro F1  | 0.5255 |
+
+Best epoch:
+
+* Epoch `5`
+
+### Failure Analysis
+
+Observed:
+
+* strong overfitting
+* increasing validation loss despite decreasing training loss
+
+Identified strengths:
+
+* Normal beat classification (`N`)
+* Right bundle branch block classification (`R`)
+
+Identified weaknesses:
+
+* Atrial premature beats (`A`)
+* Left bundle branch block beats (`L`)
+
+Observed that:
+
+* ventricular recall is extremely high
+* ventricular precision is relatively low
+
+Discovered that the model frequently confuses:
+
+* `L` → `V`
+
+Learned that confusion matrices reveal clinically meaningful model behavior that overall accuracy cannot capture.
+
+### Concepts Learned
+
+* Validation datasets
+* Generalization
+* Overfitting
+* Evaluation mode
+* Inference mode
+* Accuracy
+* Precision
+* Recall
+* F1 score
+* Macro averaging
+* Per-class metrics
+* Confusion matrices
+* Failure analysis
+* Medical AI evaluation methodology
+
+### Files Added / Modified
+
+* `ml/src/training/validator.py`
+* `ml/src/training/metrics.py`
+* `ml/src/training/train.py`
+
+### Git Commit
+
+```
+Build validation pipeline and evaluate baseline ECG CNN on unseen patients
+```
+
+### Project Status
+
+✅ Dataset Engineering Complete
+
+✅ Preprocessing Pipeline Complete
+
+✅ Baseline CNN Implemented
+
+✅ PyTorch Training Pipeline Complete
+
+✅ Validation Pipeline Complete
+
+✅ First Generalization Evaluation Complete
+
+### Next Session
+
+* Implement model checkpoint saving.
+
+* Save the best model using validation Macro F1.
+
+* Implement early stopping.
+
+* Analyze confusion matrix behavior in greater detail.
+
+* Begin improving the baseline CNN architecture.
+
+* Introduce:
+
+  * Dropout
+  * Weight Decay
+  * Batch Normalization
+
+* Improve minority class performance.
+
+* Reduce overfitting while preserving patient-independent evaluation.
+

@@ -20,10 +20,7 @@ def train_one_epoch(
 
         outputs = model(signals)
 
-        loss = criterion(
-            outputs,
-            labels,
-        )
+        loss = criterion(outputs,labels)
 
         loss.backward()
 

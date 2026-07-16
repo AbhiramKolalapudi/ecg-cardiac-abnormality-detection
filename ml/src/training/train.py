@@ -20,6 +20,7 @@ from src.preprocessing.pipeline import prepare_datasets
 
 from src.models.baseline_cnn import BaselineCNN
 from src.training.trainer import train_one_epoch
+from src.training.validator import validate_one_epoch
 
 
 def main():
@@ -140,12 +141,40 @@ def main():
             device=device,
         )
 
-        print(
-            f"Training Loss: "
-            f"{train_loss:.4f}"
+        val_metrics = validate_one_epoch(
+            model=model,
+            val_loader=val_loader,
+            criterion=criterion,
+            device=device,
         )
 
+        print(f"Train Loss: {train_loss:.4f}")
+
+        print(f"Val Loss: {val_metrics['loss']:.4f}")
+
+        print(f"Accuracy: {val_metrics['accuracy']:.4f}")
+
+        print(f"Precision: {val_metrics['precision']:.4f}")
+
+        print(f"Recall: {val_metrics['recall']:.4f}")
+
+        print(f"F1 Score: {val_metrics['f1']:.4f}")
+
     print("\nTraining Complete!")
+    CLASS_NAMES = ["N", "A", "V", "L", "R"]
+
+    print("\nPer-Class Metrics")
+    print("=" * 50)
+
+    for i, class_name in enumerate(CLASS_NAMES):
+        print(f"\nClass {class_name}")
+        print(f"Precision: {val_metrics['per_class_precision'][i]:.4f}")
+        print(f"Recall:    {val_metrics['per_class_recall'][i]:.4f}")
+        print(f"F1 Score:  {val_metrics['per_class_f1'][i]:.4f}")
+
+    print("\nConfusion Matrix")
+    print("=" * 50)
+    print(val_metrics["confusion_matrix"])
 
 
 if __name__ == "__main__":
