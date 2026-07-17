@@ -88,6 +88,9 @@ BATCH_SIZE = 64
 LEARNING_RATE = 1e-3
 NUM_EPOCHS = 20
 
+# Reproducibility
+RANDOM_SEED = 42
+
 # Dataset Information
 NUM_CLASSES = 5
 
@@ -102,3 +105,22 @@ CLASS_NAMES = [
 
 # Preferred Training Device
 DEVICE = "cuda"
+
+# Saved Models Path
+SAVED_MODELS_PATH = PROJECT_ROOT / "saved_models"
+
+BASELINE_MODEL_PATH = (
+    SAVED_MODELS_PATH /
+    "baseline_best.pth"
+)
+
+REGULARIZED_MODEL_PATH = (
+    SAVED_MODELS_PATH / 
+    "regularized_best.pth"
+)
+
+EARLY_STOPPING_PATIENCE = 5
+
+WEIGHT_DECAY = 1e-4
+
+DROPOUT_RATE = 0.3

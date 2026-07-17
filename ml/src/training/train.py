@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import random
 import torch.nn as nn
 import torch.optim as optim
 
@@ -11,6 +12,10 @@ from src.config.constants import (
     BATCH_SIZE,
     LEARNING_RATE,
     NUM_EPOCHS,
+    REGULARIZED_MODEL_PATH,
+    EARLY_STOPPING_PATIENCE,
+    RANDOM_SEED,
+    WEIGHT_DECAY
 )
 
 from src.datasets.dataset_builder import build_dataset
@@ -18,12 +23,16 @@ from src.datasets.ecg_dataset import ECGDataset
 
 from src.preprocessing.pipeline import prepare_datasets
 
-from src.models.baseline_cnn import BaselineCNN
+from src.models.regularized_cnn import RegularizedCNN
 from src.training.trainer import train_one_epoch
 from src.training.validator import validate_one_epoch
 
 
 def main():
+
+    random.seed(RANDOM_SEED)
+    np.random.seed(RANDOM_SEED)
+    torch.manual_seed(RANDOM_SEED)
 
     # Device
     device = torch.device(
@@ -91,7 +100,7 @@ def main():
     )
 
     # Model
-    model = BaselineCNN().to(device)
+    model = RegularizedCNN().to(device)
 
     print("\nModel Architecture:")
     print(model)
@@ -120,9 +129,15 @@ def main():
     optimizer = optim.Adam(
         model.parameters(),
         lr=LEARNING_RATE,
+        weight_decay=WEIGHT_DECAY,
     )
 
+
     # Training loop
+    best_f1 = -float("inf")
+    best_epoch = -1
+    patience_counter = 0
+
     for epoch in range(NUM_EPOCHS):
 
         print(
@@ -147,6 +162,22 @@ def main():
             criterion=criterion,
             device=device,
         )
+        current_f1 = val_metrics["f1"]
+
+        if current_f1 > best_f1:
+            best_f1 = current_f1
+            best_epoch = epoch + 1
+            best_val_metrics = val_metrics
+
+            torch.save(model.state_dict(),REGULARIZED_MODEL_PATH,)
+
+            patience_counter = 0
+
+            print(f"\nNew best model saved (Macro F1 = {best_f1:.4f})")
+        
+        else:
+            patience_counter += 1
+
 
         print(f"Train Loss: {train_loss:.4f}")
 
@@ -160,6 +191,11 @@ def main():
 
         print(f"F1 Score: {val_metrics['f1']:.4f}")
 
+        if patience_counter >= EARLY_STOPPING_PATIENCE:
+
+            print("\nEarly stopping triggered.")
+            break
+
     print("\nTraining Complete!")
     CLASS_NAMES = ["N", "A", "V", "L", "R"]
 
@@ -168,13 +204,19 @@ def main():
 
     for i, class_name in enumerate(CLASS_NAMES):
         print(f"\nClass {class_name}")
-        print(f"Precision: {val_metrics['per_class_precision'][i]:.4f}")
-        print(f"Recall:    {val_metrics['per_class_recall'][i]:.4f}")
-        print(f"F1 Score:  {val_metrics['per_class_f1'][i]:.4f}")
+        print(f"Precision: {best_val_metrics['per_class_precision'][i]:.4f}")
+        print(f"Recall:    {best_val_metrics['per_class_recall'][i]:.4f}")
+        print(f"F1 Score:  {best_val_metrics['per_class_f1'][i]:.4f}")
 
     print("\nConfusion Matrix")
     print("=" * 50)
-    print(val_metrics["confusion_matrix"])
+    print(best_val_metrics["confusion_matrix"])
+
+    print("\nBest Model")
+    print("=" * 50)
+    print(f"Epoch: {best_epoch}")
+    print(f"Macro F1: {best_f1:.4f}")
+    print(f"Saved to: {REGULARIZED_MODEL_PATH}")
 
 
 if __name__ == "__main__":
