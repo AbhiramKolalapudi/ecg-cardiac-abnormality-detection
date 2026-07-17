@@ -1603,3 +1603,301 @@ Build validation pipeline and evaluate baseline ECG CNN on unseen patients
 
 * Reduce overfitting while preserving patient-independent evaluation.
 
+## Day 11 - Checkpointing, Early Stopping and CNN Regularization
+
+**Date:** 17 July 2026
+
+### Objectives
+
+* Implement model checkpoint saving.
+* Implement early stopping.
+* Improve experiment reproducibility.
+* Introduce regularization techniques.
+* Reduce overfitting in the baseline CNN.
+* Improve minority class performance.
+
+### Work Completed
+
+* Studied the purpose of model checkpointing.
+
+* Learned the difference between:
+
+  * saving learned parameters
+  * saving entire model objects
+
+* Selected:
+
+  * `state_dict()`
+
+for model persistence.
+
+* Implemented validation-based checkpoint saving.
+
+* Selected:
+
+  * Macro F1
+
+as the checkpoint selection metric.
+
+* Added:
+
+  * `baseline_best.pth`
+
+* Learned why validation loss is not always aligned with medical classification objectives.
+
+* Implemented early stopping.
+
+* Learned that early stopping tracks:
+
+  * best validation metric
+  * patience counter
+  * consecutive epochs without improvement
+
+* Learned that patience resets only when the model exceeds the best validation score rather than the previous epoch score.
+
+* Added:
+
+  * `EARLY_STOPPING_PATIENCE`
+
+to configuration.
+
+* Implemented reproducible experiments using:
+
+  * `random.seed()`
+  * `np.random.seed()`
+  * `torch.manual_seed()`
+
+* Learned that randomness originates from:
+
+  * model initialization
+  * DataLoader shuffling
+  * NumPy operations
+
+* Added:
+
+  * `RANDOM_SEED`
+
+to configuration.
+
+### Baseline Experiment Finalization
+
+* Performed the first fully reproducible baseline training run.
+
+* Saved the official baseline checkpoint:
+
+  * `baseline_best.pth`
+
+Baseline performance:
+
+| Metric     |  Value |
+| ---------- | -----: |
+| Best Epoch |      1 |
+| Accuracy   | 0.8296 |
+| Precision  | 0.4972 |
+| Recall     | 0.5557 |
+| Macro F1   | 0.5160 |
+
+* Observed severe overfitting.
+
+* Learned that validation performance peaked almost immediately after training began.
+
+### CNN Regularization
+
+* Studied the purpose of regularization.
+
+* Learned that regularization attempts to improve generalization rather than training performance.
+
+### Weight Decay
+
+* Studied L2 regularization and weight decay.
+
+* Learned that weight decay penalizes large model weights.
+
+* Learned that large weights often correspond to memorization and highly specific decision boundaries.
+
+* Implemented:
+
+  * `WEIGHT_DECAY = 1e-4`
+
+### Dropout
+
+* Studied neuron co-adaptation.
+
+* Learned that dropout randomly disables neurons during training.
+
+* Learned that dropout is automatically disabled during:
+
+  * `model.eval()`
+
+* Selected:
+
+  * `Dropout(p=0.3)`
+
+### Batch Normalization
+
+* Studied activation normalization inside neural networks.
+
+* Learned that BatchNorm standardizes intermediate feature distributions.
+
+* Learned the standard CNN ordering:
+
+```text
+Conv
+→ BatchNorm
+→ ReLU
+→ Pool
+```
+
+* Implemented:
+
+  * `BatchNorm1d(32)`
+  * `BatchNorm1d(64)`
+
+### Regularized CNN Architecture
+
+Implemented:
+
+```text
+Input
+→ Conv1D
+→ BatchNorm
+→ ReLU
+→ MaxPool
+→ Conv1D
+→ BatchNorm
+→ ReLU
+→ MaxPool
+→ Flatten
+→ Linear
+→ ReLU
+→ Dropout
+→ Output
+```
+
+* Created:
+
+  * `regularized_cnn.py`
+
+* Preserved:
+
+  * `baseline_cnn.py`
+
+for future comparisons.
+
+### Regularized Model Results
+
+Best validation performance:
+
+| Metric     |  Value |
+| ---------- | -----: |
+| Best Epoch |      7 |
+| Accuracy   | 0.8196 |
+| Precision  | 0.5416 |
+| Recall     | 0.5976 |
+| Macro F1   | 0.5443 |
+
+* Saved:
+
+  * `regularized_best.pth`
+
+* Improved Macro F1 from:
+
+```text
+0.5160
+→
+0.5443
+```
+
+* Observed a significant reduction in overfitting.
+
+* Learned that the best validation epoch shifted from:
+
+```text
+Epoch 1
+→
+Epoch 7
+```
+
+### Failure Analysis
+
+Observed improvements:
+
+* atrial beat classification (`A`)
+* overall Macro F1
+* validation stability
+
+Observed remaining weaknesses:
+
+* left bundle branch block classification (`L`)
+
+Observed that:
+
+* most `L` beats are classified as `V` beats.
+
+Identified the dominant failure mode:
+
+```text
+L → V confusion
+```
+
+### Concepts Learned
+
+* Model checkpointing
+* Model persistence
+* Validation-based model selection
+* Early stopping
+* Reproducibility
+* Random seeds
+* Weight decay
+* L2 regularization
+* Dropout
+* Neuron co-adaptation
+* Batch normalization
+* Experiment tracking
+* Regularization techniques
+
+### Files Added / Modified
+
+* `ml/src/models/regularized_cnn.py`
+* `ml/src/training/train.py`
+* `ml/src/config/constants.py`
+
+### Git Commit
+
+```
+Add checkpointing, early stopping and CNN regularization
+```
+
+### Project Status
+
+✅ Dataset Engineering Complete
+
+✅ Preprocessing Pipeline Complete
+
+✅ Baseline CNN Complete
+
+✅ Training Infrastructure Complete
+
+✅ Validation Infrastructure Complete
+
+✅ Checkpointing Complete
+
+✅ Early Stopping Complete
+
+✅ Regularized CNN Complete
+
+### Next Session
+
+* Analyze L vs V confusion in greater detail.
+
+* Investigate minority class learning behavior.
+
+* Explore:
+
+  * oversampling
+  * augmentation
+  * class balancing strategies
+
+* Continue improving Macro F1 while preserving patient-independent evaluation.
+
+
