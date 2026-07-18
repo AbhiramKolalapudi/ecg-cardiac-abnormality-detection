@@ -1900,4 +1900,223 @@ Add checkpointing, early stopping and CNN regularization
 
 * Continue improving Macro F1 while preserving patient-independent evaluation.
 
+## Day 12 - Failure Analysis, Controlled Experiments and Focal Loss
+
+**Date:** 18 July 2026
+
+### Objectives
+
+* Analyze the dominant failure mode of the Regularized CNN.
+* Verify whether preprocessing contributes to misclassification.
+* Investigate class imbalance solutions.
+* Learn the theory behind Focal Loss.
+* Perform controlled experiments to improve minority class performance.
+
+### Work Completed
+
+* Performed detailed confusion matrix analysis of the best Regularized CNN.
+
+* Identified the dominant failure mode:
+
+```text
+L → V confusion
+```
+
+* Verified that:
+
+  * heartbeat extraction is correct
+  * R-peak alignment is correct
+  * Z-score normalization preserves ECG morphology
+
+* Concluded that preprocessing is not responsible for the remaining classification errors.
+
+### WeightedRandomSampler
+
+* Studied the difference between:
+
+  * weighted loss functions
+  * weighted sampling
+
+* Learned the distinction between:
+
+  * class weights
+  * sample weights
+
+* Understood why:
+
+  * `CrossEntropyLoss` requires one weight per class.
+  * `WeightedRandomSampler` requires one weight per training sample.
+
+* Learned how `replacement=True` oversamples minority classes without duplicating the dataset.
+
+* Implemented:
+
+  * `WeightedRandomSampler`
+
+* Replaced DataLoader shuffling with weighted sampling.
+
+* Trained the Regularized CNN using weighted sampling.
+
+### Weighted Sampling Results
+
+* Observed that Macro F1 decreased.
+
+* Learned that increasing exposure to minority samples alone does not solve the L → V confusion.
+
+* Rejected the weighted sampling hypothesis based on experimental evidence.
+
+### Focal Loss
+
+* Studied why CrossEntropyLoss continues learning from easy examples.
+
+* Learned the motivation behind Focal Loss.
+
+* Understood the concepts of:
+
+  * difficult examples
+  * easy examples
+  * focusing parameter (γ)
+  * class balancing parameter (α)
+
+* Learned that:
+
+  * γ = 0 reduces Focal Loss to CrossEntropyLoss.
+  * increasing γ reduces the contribution of easy samples.
+
+* Derived:
+
+```text
+CrossEntropy = -log(pt)
+
+pt = exp(-CrossEntropy)
+```
+
+instead of memorizing the formula.
+
+* Learned why:
+
+  * `pt` should be computed from unweighted CrossEntropy.
+  * weighted CrossEntropy should be used only for optimization.
+
+### Custom Loss Implementation
+
+* Designed and implemented:
+
+  * `FocalLoss`
+
+* Built the custom PyTorch loss function from first principles.
+
+* Implemented:
+
+  * per-sample CrossEntropy
+  * focal weighting
+  * weighted CrossEntropy
+  * batch averaging
+
+* Integrated `FocalLoss` into the existing training pipeline.
+
+### Focal Loss Results
+
+Best validation performance:
+
+| Metric     |  Value |
+| ---------- | -----: |
+| Best Epoch |      4 |
+| Accuracy   | 0.7708 |
+| Precision  | 0.4860 |
+| Recall     | 0.5626 |
+| Macro F1   | 0.4923 |
+
+* Observed that:
+
+  * ventricular recall increased significantly.
+  * left bundle branch block recall remained zero.
+
+* Identified that the model became even more confident in predicting:
+
+```text
+L → V
+```
+
+* Concluded that Focal Loss does not solve the primary failure mode of the project.
+
+### Failure Analysis
+
+Performed three consecutive controlled experiments:
+
+* Regularization
+
+  * Improved Macro F1.
+
+* WeightedRandomSampler
+
+  * No improvement.
+
+* Focal Loss
+
+  * No improvement.
+
+* Concluded that the remaining bottleneck is unlikely to be:
+
+  * preprocessing
+  * normalization
+  * class imbalance
+  * sampling strategy
+  * loss function
+
+* Determined that the most likely limitation is the CNN's feature extraction capability rather than the training strategy.
+
+### Concepts Learned
+
+* Failure analysis
+* Controlled experimentation
+* Scientific hypothesis testing
+* Weighted sampling
+* Sample weights
+* Class weights
+* WeightedRandomSampler
+* Focal Loss
+* Hard vs easy examples
+* Focusing parameter (γ)
+* Alpha balancing parameter (α)
+* Custom PyTorch loss functions
+* Functional CrossEntropy
+* Per-sample loss computation
+* Experiment reproducibility
+* Model bottleneck analysis
+
+### Files Added / Modified
+
+* `ml/src/models/focal_loss.py`
+* `ml/src/training/train.py`
+
+### Git Commit
+
+```text
+Implement Focal Loss and evaluate advanced class imbalance strategies
+```
+
+### Project Status
+
+✅ Dataset Engineering Complete
+
+✅ Preprocessing Pipeline Complete
+
+✅ Baseline CNN Complete
+
+✅ Regularized CNN Complete
+
+✅ Validation Infrastructure Complete
+
+✅ Controlled Sampling Experiments Complete
+
+✅ Custom Focal Loss Implemented
+
+### Next Session
+
+* Restore the Day 11 baseline model.
+* Investigate architectural improvements.
+* Increase feature extraction capacity.
+* Design a deeper CNN while keeping the training pipeline unchanged.
+* Continue improving minority class classification without sacrificing patient-independent evaluation.
 
