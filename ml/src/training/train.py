@@ -12,7 +12,7 @@ from src.config.constants import (
     BATCH_SIZE,
     LEARNING_RATE,
     NUM_EPOCHS,
-    REGULARIZED_MODEL_PATH,
+    DEEPER_MODEL_PATH,
     EARLY_STOPPING_PATIENCE,
     RANDOM_SEED,
     WEIGHT_DECAY
@@ -23,7 +23,7 @@ from src.datasets.ecg_dataset import ECGDataset
 
 from src.preprocessing.pipeline import prepare_datasets
 
-from src.models.regularized_cnn import RegularizedCNN
+from src.models.deeper_cnn import DeeperCNN
 from src.training.trainer import train_one_epoch
 from src.training.validator import validate_one_epoch
 
@@ -100,7 +100,7 @@ def main():
     )
 
     # Model
-    model = RegularizedCNN().to(device)
+    model = DeeperCNN().to(device)
 
     print("\nModel Architecture:")
     print(model)
@@ -169,7 +169,7 @@ def main():
             best_epoch = epoch + 1
             best_val_metrics = val_metrics
 
-            torch.save(model.state_dict(),REGULARIZED_MODEL_PATH,)
+            torch.save(model.state_dict(),DEEPER_MODEL_PATH,)
 
             patience_counter = 0
 
@@ -216,7 +216,7 @@ def main():
     print("=" * 50)
     print(f"Epoch: {best_epoch}")
     print(f"Macro F1: {best_f1:.4f}")
-    print(f"Saved to: {REGULARIZED_MODEL_PATH}")
+    print(f"Saved to: {DEEPER_MODEL_PATH}")
 
 
 if __name__ == "__main__":

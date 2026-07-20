@@ -2120,3 +2120,203 @@ Implement Focal Loss and evaluate advanced class imbalance strategies
 * Design a deeper CNN while keeping the training pipeline unchanged.
 * Continue improving minority class classification without sacrificing patient-independent evaluation.
 
+## Day 13 - Model Interpretability and Feature Space Investigation
+
+**Date:** 20 July 2026
+
+### Objectives
+
+* Understand why the RegularizedCNN continues to confuse L and V heartbeats.
+* Investigate the learned feature representations rather than modifying the architecture.
+* Learn techniques for interpreting deep learning models.
+* Identify the true bottleneck before designing a new model.
+
+### Work Completed
+
+* Shifted focus from model improvement to model interpretability.
+
+* Studied the distinction between:
+
+  * feature extraction
+  * classification
+
+* Learned that improving a model requires understanding its failure mode rather than blindly modifying the architecture.
+
+### Feature Extraction
+
+* Extended:
+
+  * `regularized_cnn.py`
+
+* Implemented:
+
+  * `extract_features()`
+
+to return the 128-dimensional feature representation before the final classifier.
+
+* Preserved the existing forward pass to avoid affecting the training pipeline.
+
+### Feature Space Analysis
+
+* Designed and implemented:
+
+  * `feature_space_analysis.py`
+
+* Built a reusable analysis pipeline for the trained RegularizedCNN.
+
+Implemented:
+
+* feature extraction
+* t-SNE visualization
+* logit inspection
+* class centroid computation
+* distance-to-centroid analysis
+* classifier weight analysis
+
+### t-SNE Visualization
+
+* Studied the purpose of t-SNE for visualizing high-dimensional feature spaces.
+
+* Learned that t-SNE:
+
+  * preserves local neighborhoods
+  * does not preserve true Euclidean distances
+  * does not visualize classifier decision boundaries
+
+* Projected the learned 128-dimensional feature vectors into two dimensions.
+
+* Observed that:
+
+  * N forms well-defined clusters.
+  * R forms a compact cluster.
+  * V forms several coherent regions.
+  * L occupies its own visible region rather than collapsing into V.
+
+* Learned that the CNN has learned meaningful feature representations.
+
+### Logit Analysis
+
+* Investigated the raw classifier logits for true L heartbeats.
+
+* Learned that logits represent classifier confidence before Softmax.
+
+* Examined multiple misclassified L heartbeats.
+
+* Observed that:
+
+  * the classifier predicts V with very high confidence.
+  * L logits remain strongly negative even for true L beats.
+
+### Class Centroid Analysis
+
+* Computed the centroid of every heartbeat class in the learned 128-dimensional feature space.
+
+* Calculated pairwise Euclidean distances between all class centroids.
+
+* Observed that:
+
+  * the L and V centroids are not unusually close.
+  * several other class pairs have smaller centroid distances.
+
+* Learned that average feature representations alone do not explain the L → V confusion.
+
+### Distance-to-Centroid Analysis
+
+* Computed the distance from every true L heartbeat to:
+
+  * the L centroid
+  * the V centroid
+
+Results:
+
+* 1442 of 1457 L heartbeats are closer to the L centroid.
+* Only 15 L heartbeats are closer to the V centroid.
+
+* Learned that individual L beats remain much closer to the learned L representation than the V representation.
+
+* Concluded that the feature extractor has not collapsed L into V.
+
+### Classifier Weight Analysis
+
+* Studied the role of the final linear classifier.
+
+* Learned that logits are computed using:
+
+```text
+logit = W·x + b
+```
+
+* Computed cosine similarity between all FC2 classifier weight vectors.
+
+* Observed that:
+
+  * the L and V classifier weight vectors are nearly orthogonal.
+
+* Learned that the classifier has not learned nearly identical decision boundaries for L and V.
+
+### Failure Analysis
+
+* Combined evidence from:
+
+  * waveform analysis
+  * feature visualization
+  * centroid analysis
+  * distance analysis
+  * classifier analysis
+
+* Eliminated several possible explanations for the remaining failure mode.
+
+* Concluded that:
+
+  * preprocessing is functioning correctly.
+  * learned feature representations are meaningful.
+  * the remaining L → V confusion cannot be explained by collapsed feature embeddings or nearly identical classifier weights.
+
+### Concepts Learned
+
+* Model interpretability
+* Feature embeddings
+* Feature extraction
+* Classification head
+* t-SNE
+* Feature space visualization
+* Logits
+* Class centroids
+* Euclidean distance in embedding space
+* Cosine similarity
+* Linear classifiers
+* Decision boundaries
+* Scientific failure analysis
+* Evidence-driven experimentation
+
+### Files Added / Modified
+
+* `ml/src/models/regularized_cnn.py`
+* `ml/src/analysis/feature_space_analysis.py`
+
+### Git Commit
+
+```text
+Investigate learned feature representations and classifier behavior
+```
+
+### Project Status
+
+✅ Dataset Engineering Complete
+
+✅ Preprocessing Pipeline Complete
+
+✅ Baseline CNN Complete
+
+✅ Regularized CNN Complete
+
+✅ Controlled Sampling Experiments Complete
+
+✅ Feature Space Investigation Complete
+
+### Next Session
+
+* Review the complete investigation.
+* Design the next architecture based on the collected evidence.
+* Implement a stronger feature extractor while keeping the training pipeline unchanged.
+* Compare the new architecture fairly against the RegularizedCNN baseline.

@@ -103,8 +103,12 @@ CLASS_NAMES = [
     "R",
 ]
 
+import torch
+
 # Preferred Training Device
-DEVICE = "cuda"
+DEVICE = torch.device(
+    "cuda" if torch.cuda.is_available() else "cpu"
+)
 
 # Saved Models Path
 SAVED_MODELS_PATH = PROJECT_ROOT / "saved_models"
@@ -117,6 +121,11 @@ BASELINE_MODEL_PATH = (
 REGULARIZED_MODEL_PATH = (
     SAVED_MODELS_PATH / 
     "regularized_best.pth"
+)
+
+DEEPER_MODEL_PATH = (
+    SAVED_MODELS_PATH / 
+    "deeper_best.pth"
 )
 
 EARLY_STOPPING_PATIENCE = 5
