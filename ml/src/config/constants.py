@@ -128,6 +128,11 @@ DEEPER_MODEL_PATH = (
     "deeper_best.pth"
 )
 
+RESNET1D_MODEL_PATH = (
+    SAVED_MODELS_PATH / 
+    "resnet1d_best.pth"
+)
+
 EARLY_STOPPING_PATIENCE = 5
 
 WEIGHT_DECAY = 1e-4
