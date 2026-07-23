@@ -5,6 +5,8 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+*.py,cover
+.python-version
 
 # =========================
 # Virtual Environment
@@ -52,6 +54,21 @@ ml/experiments/
 # Logs
 # =========================
 *.log
+
+# =========================
+# Test / Coverage
+# =========================
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# =========================
+# Build / Packaging
+# =========================
+build/
+dist/
+*.egg-info/
 
 # =========================
 # IDEs

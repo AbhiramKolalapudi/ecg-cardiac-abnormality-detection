@@ -9,7 +9,7 @@ class RegularizedCNN(nn.Module):
     def __init__(self):
         super().__init__()
 
-        # Feature Extraction Layers
+
         self.conv1 = nn.Conv1d(
             in_channels=1,
             out_channels=32,
@@ -34,8 +34,7 @@ class RegularizedCNN(nn.Module):
         self.pool = nn.MaxPool1d(kernel_size=2)
         self.flatten = nn.Flatten()
 
-        # Classification Layers
-        # 64 channels × 59 samples after Conv/Pool blocks
+
         self.fc1 = nn.Linear(
             in_features=1216,
             out_features=128
@@ -52,19 +51,17 @@ class RegularizedCNN(nn.Module):
 
     def forward(self, x):
 
-        # Block 1
+
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.pool(x)
 
-        # Block 2
         x = self.conv2(x)
         x = self.bn2(x)
         x = self.relu(x)
         x = self.pool(x)
 
-        # Classification Head
         x = self.flatten(x)
 
         x = self.fc1(x)
@@ -74,7 +71,6 @@ class RegularizedCNN(nn.Module):
 
         x = self.fc2(x)
 
-        # Return raw logits
         return x
     
     def extract_features(self, x):

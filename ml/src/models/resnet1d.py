@@ -54,7 +54,6 @@ class ResNet1D(nn.Module):
     def __init__(self):
         super().__init__()
 
-        # Initial Convolution
         self.conv1 = nn.Conv1d(
             in_channels=1,
             out_channels=32,
@@ -64,13 +63,11 @@ class ResNet1D(nn.Module):
 
         self.bn1 = nn.BatchNorm1d(32)
 
-        # Residual Stage 1
         self.layer1 = nn.Sequential(
             ResidualBlock(32),
             ResidualBlock(32)
         )
 
-        # Transition to 64 Channels
         self.conv2 = nn.Conv1d(
             in_channels=32,
             out_channels=64,
@@ -80,13 +77,11 @@ class ResNet1D(nn.Module):
 
         self.bn2 = nn.BatchNorm1d(64)
 
-        # Residual Stage 2
         self.layer2 = nn.Sequential(
             ResidualBlock(64),
             ResidualBlock(64)
         )
 
-        # Common Layers
         self.relu = nn.ReLU()
 
         self.pool = nn.MaxPool1d(
@@ -99,7 +94,6 @@ class ResNet1D(nn.Module):
 
         self.flatten = nn.Flatten()
 
-        # Classification Layer
         self.fc = nn.Linear(
             in_features=64,
             out_features=NUM_CLASSES
