@@ -1,7 +1,7 @@
 import numpy as np
 import wfdb
 
-from src.config.constants import MITDB_PATH
+from src.config.constants import SVDB_PATH
 
 from src.datasets.record_processor import process_record
 
@@ -17,7 +17,7 @@ def build_dataset(
     for record_id in record_ids:
         print(f"Processing record {record_id}...")
 
-        record_path = f"{MITDB_PATH}/{record_id}"
+        record_path = f"{SVDB_PATH}/{record_id}"
 
         record = wfdb.rdrecord(record_path)
         annotation = wfdb.rdann(record_path, "atr")

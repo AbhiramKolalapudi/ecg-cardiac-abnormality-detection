@@ -1,5 +1,6 @@
 import torch.nn as nn
 
+from src.config.constants import NUM_CLASSES
 from src.config.constants import DROPOUT_RATE
 
 
@@ -44,9 +45,8 @@ class DeeperCNN(nn.Module):
         self.flatten = nn.Flatten()
 
         # Classification Layers
-        # 64 channels × 59 samples after Conv/Pool blocks
         self.fc1 = nn.Linear(
-            in_features=3456,
+            in_features=896,
             out_features=128
         )
 
@@ -56,7 +56,7 @@ class DeeperCNN(nn.Module):
 
         self.fc2 = nn.Linear(
             in_features=128,
-            out_features=5
+            out_features=NUM_CLASSES
         )
 
     def forward(self, x):

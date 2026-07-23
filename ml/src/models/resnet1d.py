@@ -1,4 +1,6 @@
 import torch.nn as nn
+from src.config.constants import NUM_CLASSES
+from src.models.se_block import SEBlock
 
 class ResidualBlock(nn.Module):
 
@@ -23,6 +25,8 @@ class ResidualBlock(nn.Module):
 
         self.bn2 = nn.BatchNorm1d(channels)
 
+        self.se = SEBlock(channels)
+
         self.relu = nn.ReLU()
 
     def forward(self, x):
@@ -36,11 +40,14 @@ class ResidualBlock(nn.Module):
         x = self.conv2(x)
         x = self.bn2(x)
 
+        x = self.se(x)
+
         x = x + identity
 
         x = self.relu(x)
 
         return x
+
 
 class ResNet1D(nn.Module):
 
@@ -95,10 +102,13 @@ class ResNet1D(nn.Module):
         # Classification Layer
         self.fc = nn.Linear(
             in_features=64,
-            out_features=5
+            out_features=NUM_CLASSES
         )
 
-    def forward(self, x):
+    def extract_features(self, x):
+        """
+        Returns the 64-dimensional feature vector before classification.
+        """
 
         # Initial Convolution
         x = self.conv1(x)
@@ -114,13 +124,20 @@ class ResNet1D(nn.Module):
         x = self.bn2(x)
         x = self.relu(x)
         x = self.pool(x)
-    
+
         # Residual Stage 2
         x = self.layer2(x)
 
-        # Classification Head
+        # Global Feature Vector
         x = self.global_pool(x)
         x = self.flatten(x)
-        x = self.fc(x)
 
-        return x 
+        return x
+
+    def forward(self, x):
+
+        features = self.extract_features(x)
+
+        logits = self.fc(features)
+
+        return logits

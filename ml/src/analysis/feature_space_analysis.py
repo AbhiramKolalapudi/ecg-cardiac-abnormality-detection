@@ -3,15 +3,16 @@ import torch
 import matplotlib.pyplot as plt
 
 from sklearn.manifold import TSNE
+from sklearn.metrics import classification_report
 
 from src.config.constants import (
     CLASS_NAMES,
     DEVICE,
     MITBIH_RECORDS,
-    REGULARIZED_MODEL_PATH,
+    RESNET1D_MODEL_PATH,
 )
 from src.datasets.dataset_builder import build_dataset
-from src.models.regularized_cnn import RegularizedCNN
+from src.models.resnet1d import ResNet1D
 from src.preprocessing.pipeline import prepare_datasets
 
 
@@ -27,7 +28,7 @@ X, y, patient_ids = build_dataset(MITBIH_RECORDS)
     _,
     X_val,
     y_val,
-    _,
+    patient_ids_val,
     X_test,
     y_test,
     _
@@ -37,8 +38,25 @@ X, y, patient_ids = build_dataset(MITBIH_RECORDS)
     patient_ids
 )
 
+# ============================================================
+# Dataset Statistics
+# ============================================================
+
+print("\n" + "=" * 60)
+print("DATASET STATISTICS")
+print("=" * 60)
+
+print(f"Training L Beats   : {np.sum(y_train == 3)}")
+print(f"Validation L Beats : {np.sum(y_val == 3)}")
+print(f"Test L Beats       : {np.sum(y_test == 3)}")
+
 X_val = torch.tensor(
     X_val,
+    dtype=torch.float32
+).unsqueeze(1)
+
+X_train = torch.tensor(
+    X_train,
     dtype=torch.float32
 ).unsqueeze(1)
 
@@ -49,11 +67,11 @@ print(f"Validation Tensor Shape: {X_val.shape}")
 # Load Trained Model
 # ============================================================
 
-model = RegularizedCNN().to(DEVICE)
+model = ResNet1D().to(DEVICE)
 
 model.load_state_dict(
     torch.load(
-        REGULARIZED_MODEL_PATH,
+        RESNET1D_MODEL_PATH,
         map_location=DEVICE,
     )
 )
@@ -61,6 +79,7 @@ model.load_state_dict(
 model.eval()
 
 X_val = X_val.to(DEVICE)
+X_train = X_train.to(DEVICE)
 
 
 # ============================================================
@@ -122,6 +141,116 @@ predictions = predictions.cpu().numpy()
 
 print(f"Logit Shape: {logits.shape}")
 print(f"Prediction Shape: {predictions.shape}")
+
+# ============================================================
+# Classification Report
+# ============================================================
+
+print("\n" + "=" * 60)
+print("CLASSIFICATION REPORT")
+print("=" * 60)
+
+print(
+    classification_report(
+        y_val,
+        predictions,
+        target_names=CLASS_NAMES,
+        digits=4
+    )
+)
+
+
+print("\n" + "=" * 60)
+print("TRAINING SET EVALUATION")
+print("=" * 60)
+
+with torch.no_grad():
+    train_logits = model(X_train)
+
+train_predictions = torch.argmax(train_logits, dim=1).cpu().numpy()
+
+print(
+    classification_report(
+        y_train,
+        train_predictions,
+        target_names=CLASS_NAMES,
+        digits=4
+    )
+)
+
+
+print("\n" + "=" * 60)
+print("TRAINING L CLASS ANALYSIS")
+print("=" * 60)
+
+train_l_predictions = train_predictions[y_train == 3]
+
+for class_id, class_name in enumerate(CLASS_NAMES):
+
+    count = np.sum(train_l_predictions == class_id)
+    percentage = 100 * count / len(train_l_predictions)
+
+    print(
+        f"L → {class_name}: {count:4d} ({percentage:.2f}%)"
+    )
+
+
+# ============================================================
+# L Class Confusion Analysis
+# ============================================================
+
+print("\n" + "=" * 60)
+print("L CLASS CONFUSION ANALYSIS")
+print("=" * 60)
+
+L_CLASS = 3
+
+l_predictions = predictions[y_val == L_CLASS]
+
+for class_id, class_name in enumerate(CLASS_NAMES):
+
+    count = np.sum(l_predictions == class_id)
+    percentage = 100 * count / len(l_predictions)
+
+    print(
+        f"L → {class_name}: {count:4d} ({percentage:.2f}%)"
+    )
+
+
+# ============================================================
+# Misclassified L Beats
+# ============================================================
+
+print("\n" + "=" * 60)
+print("MISCLASSIFIED L BEATS")
+print("=" * 60)
+
+misclassified = np.where(
+    (y_val == L_CLASS) &
+    (predictions != L_CLASS)
+)[0]
+
+print(f"Total Misclassified L Beats: {len(misclassified)}")
+
+
+# ============================================================
+# Misclassified L Beats by Patient
+# ============================================================
+
+print("\n" + "=" * 60)
+print("MISCLASSIFIED L BEATS BY PATIENT")
+print("=" * 60)
+
+misclassified_patients = patient_ids_val[misclassified]
+
+unique_patients, counts = np.unique(
+    misclassified_patients,
+    return_counts=True
+)
+
+for patient, count in zip(unique_patients, counts):
+
+    print(f"Patient {patient}: {count}")
 
 
 # ============================================================
@@ -203,10 +332,10 @@ print(f"Average distance to L centroid : {distance_to_L.mean():.3f}")
 print(f"Average distance to V centroid : {distance_to_V.mean():.3f}")
 
 print("\n" + "=" * 60)
-print("FC2 WEIGHT SIMILARITY")
+print("FC WEIGHT SIMILARITY")
 print("=" * 60)
 
-weights = model.fc2.weight.detach().cpu().numpy()
+weights = model.fc.weight.detach().cpu().numpy()
 
 from itertools import combinations
 
