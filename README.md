@@ -216,7 +216,7 @@ Primary evaluation metrics:
 
 | Model | Accuracy | Macro F1 |
 |--------|---------:|---------:|
-| Baseline CNN | — | 0.5160 |
+| Baseline CNN | 79.41% | 0.5255 |
 | **Regularized CNN** | **81.96%** | **0.5443** |
 
 The Regularized CNN improved upon the baseline through:
