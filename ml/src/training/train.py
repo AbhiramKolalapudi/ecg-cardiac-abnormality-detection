@@ -34,7 +34,6 @@ def main():
     np.random.seed(RANDOM_SEED)
     torch.manual_seed(RANDOM_SEED)
 
-    # Device
     device = torch.device(
         "cuda" if torch.cuda.is_available()
         else "cpu"
@@ -42,12 +41,10 @@ def main():
 
     print(f"Using device: {device}")
 
-    # Build complete dataset
     X, y, patient_ids = build_dataset(
         MITBIH_RECORDS
     )
 
-    # Train / Validation / Test split
     (
         X_train,
         y_train,
@@ -64,7 +61,6 @@ def main():
         patient_ids,
     )
 
-    # PyTorch datasets
     train_dataset = ECGDataset(
         X_train,
         y_train,
@@ -80,7 +76,6 @@ def main():
         y_test,
     )
 
-    # DataLoaders
     train_loader = DataLoader(
         train_dataset,
         batch_size=BATCH_SIZE,
@@ -99,13 +94,11 @@ def main():
         shuffle=False,
     )
 
-    # Model
     model = ResNet1D().to(device)
 
     print("\nModel Architecture:")
     print(model)
 
-    # Class weights for imbalance handling
     class_weights = compute_class_weight(
         class_weight="balanced",
         classes=np.unique(y_train),
@@ -120,7 +113,6 @@ def main():
     print("\nClass Weights:")
     print(class_weights)
 
-    # Loss function
     criterion = nn.CrossEntropyLoss(
         weight=class_weights,
     )
@@ -133,7 +125,6 @@ def main():
     )
 
 
-    # Training loop
     best_f1 = -float("inf")
     best_epoch = -1
     patience_counter = 0

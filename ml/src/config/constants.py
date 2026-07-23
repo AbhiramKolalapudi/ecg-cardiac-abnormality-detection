@@ -1,5 +1,5 @@
 from pathlib import Path
-# Heartbeat extraction settings
+
 SAMPLES_BEFORE_R = 100
 SAMPLES_AFTER_R = 150
 
@@ -8,16 +8,14 @@ HEARTBEAT_LENGTH = (
     SAMPLES_AFTER_R
 )
 
-# Target heartbeat classes
 TARGET_CLASSES = {
-    "N",  # Normal beat
-    "V",  # Premature ventricular contraction
-    "A",  # Atrial premature beat
-    "L",  # Left bundle branch block beat
-    "R",  # Right bundle branch block beat
+    "N", 
+    "V",  
+    "A",  
+    "L", 
+    "R",  
 }
 
-# Small subset for development and debugging
 TEST_RECORDS = [
     "100",
     "101",
@@ -43,7 +41,6 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 MITDB_PATH = PROJECT_ROOT / "data" / "raw" / "mitdb"
 
 
-# Dataset Split Configuration
 TRAIN_PATIENTS = [
     100, 101, 103, 105, 106, 108, 109, 112, 114, 115,
     116, 118, 121, 122, 123, 200, 203, 205, 208, 209,
@@ -60,13 +57,11 @@ TEST_PATIENTS = [
 ]
 
 
-# Processed Data Paths
 PROCESSED_DATA_PATH = PROJECT_ROOT / "data" / "processed"
 
 SPLITS_PATH = PROCESSED_DATA_PATH / "splits"
 
 
-#Label Mapping
 LABEL_TO_INDEX = {
     "N": 0,
     "A": 1,
@@ -83,18 +78,14 @@ INDEX_TO_LABEL = {
     4: "R",
 }
 
-# Training Configuration
 BATCH_SIZE = 64
 LEARNING_RATE = 1e-3
 NUM_EPOCHS = 20
 
-# Reproducibility
 RANDOM_SEED = 42
 
-# Dataset Information
 NUM_CLASSES = 5
 
-# Ordered Class Names
 CLASS_NAMES = [
     "N",
     "A",
@@ -105,12 +96,10 @@ CLASS_NAMES = [
 
 import torch
 
-# Preferred Training Device
 DEVICE = torch.device(
     "cuda" if torch.cuda.is_available() else "cpu"
 )
 
-# Saved Models Path
 SAVED_MODELS_PATH = PROJECT_ROOT / "saved_models"
 
 BASELINE_MODEL_PATH = (
